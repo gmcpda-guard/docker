@@ -1,0 +1,44 @@
+services:
+  headscale:
+    image: 'headscale/headscale:latest'
+    container_name: 'headscale'
+    restart: 'unless-stopped'
+    command: 'serve'
+    volumes:
+      - './data:/var/lib/headscale'
+      - './configs/headscale:/etc/headscale'
+    environment:
+      TZ: 'America/Chicago'
+
+        # these are the labels for traefik reverse proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.headscale.rule=Host(`hs.crealusa.com`)"
+      - "traefik.http.routers.headscale.tls.certresolver=myresolver"
+      - "traefik.http.routers.headscale.entrypoints=websecure"
+      - "traefik.http.routers.headscale.tls=true"
+      - "traefik.http.services.headscale.loadbalancer.server.port=8080"
+
+    networks:
+      - traefik
+
+  headscale-admin:
+    image: 'goodieshq/headscale-admin:latest'
+    container_name: 'headscale-admin'
+    restart: 'unless-stopped'
+
+        # these are the labels for traefik reverse proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.headscale-admin.loadbalancer.server.port=80"
+      - "traefik.http.routers.headscale-admin.rule=Host(`hs.crealusa.com`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.headscale-admin.entrypoints=websecure"
+      - "traefik.http.routers.headscale-admin.tls=true"
+
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
+
