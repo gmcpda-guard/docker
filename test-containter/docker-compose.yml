@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  ubuntu-temp:
+    image: ubuntu:latest
+    container_name: ubuntu-temp
+    stdin_open: true      # equivalent to -i
+    tty: true             # equivalent to -t
+    command: bash
+    restart: "no"
+    volumes:
+      - ./data:/data      # optional, mounts ./data on host to /data in container
+
