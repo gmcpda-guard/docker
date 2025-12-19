@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: snipe-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: snipeit
+      MYSQL_USER: snipeuser
+      MYSQL_PASSWORD: snipepass
+    volumes:
+      - "./mysql_data:/var/lib/mysql"
+
+  snipeit:
+    image: snipe/snipe-it:latest
+    container_name: snipe-app
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_KEY=c34fdedc2118fd298ce6795f47c33168
+      - APP_URL=http://inventory.finbeusa.com:8081
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=snipeit
+      - DB_USERNAME=snipeuser
+      - DB_PASSWORD=snipepass
+    ports:
+      - "8081:80"
+    volumes:
+      - "./snipeit_storage:/var/lib/snipeit"
+
+volumes:
+  mysql_data:
+  snipeit_storage:
+
