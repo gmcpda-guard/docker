@@ -1,0 +1,5 @@
+docker run --restart=unless-stopped \ 
+  --name openspeedtest -d \
+  -p 8191:3000 \
+  -p 8192:3001 \
+  openspeedtest/latest
